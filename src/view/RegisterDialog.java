@@ -1,3 +1,4 @@
+package view;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -7,19 +8,25 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-
-public class LoginDialog {
+public class RegisterDialog implements Window {
 	
 	public void display(Stage mainStage) {
 		Stage dialog = new Stage();
+		
+		// create the name label
+		Label nameLabel = new Label("Name :");
+		nameLabel.setMaxWidth(Double.MAX_VALUE);
+		nameLabel.setAlignment(Pos.CENTER);
+		
+		// create the name input
+		TextField nameInput = new TextField();
+		//loginInput.setAlignment(Pos.CENTER);
+		nameInput.setPrefWidth(200);
 		
 		// create the login label
 		Label loginLabel = new Label("Login :");
@@ -30,14 +37,6 @@ public class LoginDialog {
 		TextField loginInput = new TextField();
 		//loginInput.setAlignment(Pos.CENTER);
 		loginInput.setPrefWidth(200);
-		loginInput.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent event) {
-                if(event.getCode() == KeyCode.ENTER) {
-					dialog.close();
-                }
-            }
-        });
 		
 		// create the password label
 		Label passwordLabel = new Label("Password :");
@@ -48,30 +47,21 @@ public class LoginDialog {
 		PasswordField passwordInput = new PasswordField();
 		//passwordInput.setAlignment(Pos.CENTER);
 		passwordInput.setPrefWidth(200);
-		passwordInput.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent event) {
-                if(event.getCode() == KeyCode.ENTER) {
-                	dialog.close();
-                }
-            }
-        });
+		
+		// create the confirm password label
+		Label confirmPasswordLabel = new Label("Confirm password :");
+		confirmPasswordLabel.setMaxWidth(Double.MAX_VALUE);
+		confirmPasswordLabel.setAlignment(Pos.CENTER);
+		
+		// create the confirm password input
+		PasswordField conirmPasswordInput = new PasswordField();
+		//passwordInput.setAlignment(Pos.CENTER);
+		conirmPasswordInput.setPrefWidth(200);
 		
 		// create the submit button
-		Button submitButton = new Button("Sign in");
+		Button submitButton = new Button("Register");
 		submitButton.setPrefWidth(100);
 		submitButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				dialog.close();
-			}
-		});
-		
-		// create the register button
-		Button registerButton = new Button("Register");
-		registerButton.setPrefWidth(50);
-		registerButton.setFont(Font.font(10));
-		registerButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
 				dialog.close();
@@ -82,15 +72,18 @@ public class LoginDialog {
 		VBox vBox = new VBox();
 		vBox.setPadding(new Insets(30));
 		vBox.setSpacing(10);
+		vBox.getChildren().add(nameLabel);
+		vBox.getChildren().add(nameInput);
 		vBox.getChildren().add(loginLabel);
 		vBox.getChildren().add(loginInput);
 		vBox.getChildren().add(passwordLabel);
 		vBox.getChildren().add(passwordInput);
+		vBox.getChildren().add(confirmPasswordLabel);
+		vBox.getChildren().add(conirmPasswordInput);
 		vBox.getChildren().add(new BorderPane(submitButton));
-		vBox.getChildren().add(new BorderPane(registerButton));
 		
 		dialog.setScene(new Scene(vBox));
-		dialog.setTitle("Authentification");
+		dialog.setTitle("Registration");
 		dialog.initModality(Modality.NONE);
 		dialog.initOwner(mainStage);
 		dialog.show();

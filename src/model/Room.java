@@ -1,15 +1,26 @@
 package model;
+
 public class Room {
+	private int id;
 	private int number;
 	private String type;
 	private int size;
-	private boolean isAvailable;
+	private boolean available;
 	
-	public Room(int number, String type, int size, boolean isAvailable) {
+	public Room(int id, int number, String type, int size, boolean available) {
+		this.id = id;
 		this.number = number;
 		this.type = type;
 		this.size = size;
-		this.isAvailable = isAvailable;
+		this.available = available;
+	}
+	
+	public int getId() {
+		return this.id;
+	}
+	
+	public void setId(int id) {
+		this.id = id;
 	}
 	
 	public int getNumber() {
@@ -37,10 +48,14 @@ public class Room {
 	}
 	
 	public boolean isAvailable() {
-		return this.isAvailable;
+		return this.available;
 	}
 	
-	public void setAvailable(boolean isAvailable) {
-		this.isAvailable = isAvailable;
+	public String getAvailable() {
+		return this.available ? "yes" : "no";
+	}
+	
+	public void setAvailable(boolean available) {
+		this.available = available;
 	}
 }

@@ -1,19 +1,38 @@
 package model;
+
 import java.sql.Date;
 
 public class Booking {
+	private int id;
+	private int roomId;
 	private int roomNumber;
+	private int accountId;
 	private String accountName;
 	private Date dateFrom;
 	private Date dateTo;
-	private boolean isConfirmed;
+	private boolean confirmed;
 	
-	public Booking(int roomNumber, String accountName, Date dateFrom, Date dateTo, boolean isConfirmed) {
+	public Booking(int id, int roomId, int roomNumber, int accountId, String accountName, Date dateFrom, Date dateTo, boolean confirmed) {
+		this.id = id;
+		this.roomId = roomId;
 		this.roomNumber = roomNumber;
+		this.accountId = accountId;
 		this.accountName = accountName;
 		this.dateFrom = dateFrom;
 		this.dateTo = dateTo;
-		this.isConfirmed = isConfirmed;
+		this.confirmed = confirmed;
+	}
+	
+	public int getId() {
+		return this.id;
+	}
+	
+	public void setId(int id) {
+		this.id = id;
+	}
+	
+	public int getRoomId() {
+		return this.roomId;
 	}
 	
 	public int getRoomNumber() {
@@ -22,6 +41,10 @@ public class Booking {
 	
 	public void setRoomNumber(int roomNumber) {
 		this.roomNumber = roomNumber;
+	}
+	
+	public int getAccountId() {
+		return this.accountId;
 	}
 	
 	public String getAccountName() {
@@ -49,10 +72,14 @@ public class Booking {
 	}
 	
 	public boolean isConfirmed() {
-		return this.isConfirmed;
+		return this.confirmed;
 	}
 	
-	public void setConfirmed(boolean isConfirmed) {
-		this.isConfirmed = isConfirmed;
+	public String getConfirmed() {
+		return this.confirmed ? "yes" : "no";
+	}
+	
+	public void setConfirmed(boolean confirmed) {
+		this.confirmed = confirmed;
 	}
 }

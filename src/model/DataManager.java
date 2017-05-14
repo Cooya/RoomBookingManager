@@ -1,48 +1,102 @@
 package model;
-import java.sql.ResultSet;
+
 import java.sql.SQLException;
 
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 public class DataManager {
+	private static final String DB_URL = "jdbc:mysql://localhost/room_booking_manager";
+	private static final String DB_LOGIN = "root";
+	
+	private DatabaseConnection db;
 	private ObservableList<Account> accounts;
 	private ObservableList<Room> rooms;
 	private ObservableList<Booking> bookings;
+	private SimpleObjectProperty<Account> currentUser;
 	
 	public DataManager() {
+		this.db = new DatabaseConnection();
 		this.accounts = FXCollections.observableArrayList();
 		this.rooms = FXCollections.observableArrayList();
 		this.bookings = FXCollections.observableArrayList();
+		this.currentUser = new SimpleObjectProperty<Account>();
 	}
+	
+	public void connectToDatabase() throws ClassNotFoundException, SQLException {
+		db.connect(DB_URL, DB_LOGIN, null);
+	}
+	
+	public ObservableValue<Account> getCurrentUser() {
+		return this.currentUser;
+	}
+	
+	private void fillLocalDataCollection(int accountType) throws SQLException {
+		Room[] rooms = this.db.getAllRooms();
+		for(Room room : rooms)
+			this.rooms.add(room);
+		if(accountType == Account.ROOT || accountType == Account.ADMIN) {
+			Booking[] bookings = this.db.getAllBookings();
+			for(Booking booking : bookings)
+				this.bookings.add(booking);
+			Account[] accounts = this.db.getAllAccounts();
+			for(Account account : accounts)
+				this.accounts.add(account);
+		}
+	}
+	
+	/* GET OBSERVABLE LIST */
 	
 	public ObservableList<Account> getAccounts() {
 		return this.accounts;
-	}
-	
-	public void storeAccounts(ResultSet set) throws SQLException {
-		while(set.next())
-			this.accounts.add(new Account(set.getString("name"), set.getString("login"), set.getInt("type")));
-		set.close();
 	}
 	
 	public ObservableList<Room> getRooms() {
 		return this.rooms;
 	}
 	
-	public void storeRooms(ResultSet set) throws SQLException {
-		while(set.next())
-			this.rooms.add(new Room(set.getInt("number"), set.getString("type"), set.getInt("size"), set.getBoolean("isAvailable")));
-		set.close();
-	}
-	
 	public ObservableList<Booking> getBookings() {
 		return this.bookings;
 	}
 	
-	public void storeBookings(ResultSet set) throws SQLException {
-		while(set.next())
-			this.bookings.add(new Booking(set.getInt("number"), set.getString("name"), set.getDate("dateFrom"), set.getDate("dateTo"), set.getBoolean("confirmed")));
-		set.close();
+	/* DATA REQUESTS */
+	
+	public boolean logIn(String login, String password) throws SQLException {
+		Account account = this.db.logIn(login, password);
+		if(account != null) {
+			currentUser.setValue(account);
+			fillLocalDataCollection(account.getAccountType());
+		}
+		return account != null;
+	}
+	
+	public void createAccount(Account account, String password) throws SQLException {
+		account = this.db.createAccount(account, password);
+		if(currentUser.getValue() == null) { // user not connected
+			currentUser.setValue(account);
+			fillLocalDataCollection(account.getAccountType());
+		}
+		else
+			this.accounts.add(account);
+	}
+	
+	public void createRoom(Room room) throws SQLException {
+		this.rooms.add(this.db.createRoom(room));
+	}
+	
+	public boolean createBooking(Booking booking) throws SQLException {
+		if(this.db.isBookingsBetweenDates(booking.getRoomId(), booking.getDateFrom(), booking.getDateTo()))
+			return false;
+		this.bookings.add(this.db.createBooking(booking));
+		return true;
+	}
+	
+	public boolean updateBooking(Booking booking) throws SQLException {
+		boolean success = this.db.updateBooking(booking);
+		if(success)
+			this.bookings.set(this.bookings.indexOf(booking), booking); // for refresh the TableView
+		return success;
 	}
 }

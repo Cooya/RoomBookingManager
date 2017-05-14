@@ -1,4 +1,7 @@
 package view;
+
+import controller.ActionId;
+import controller.Controller;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -15,59 +18,67 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
+public class LoginDialog extends Window {
+	private TextField loginInput;
+	private TextField passwordInput;
 
-public class LoginDialog implements Window {
-	
-	public void display(Stage mainStage) {
+	public Stage innerDisplay(Stage mainStage, Object... args) {
 		Stage dialog = new Stage();
-		
+
+		dialog.setOnCloseRequest(new EventHandler<WindowEvent>() {
+			@Override
+			public void handle(WindowEvent event) {
+				dialog.close();
+			}
+		});
+
+		EventHandler<KeyEvent> submitByKey = new EventHandler<KeyEvent>() {
+			@Override
+			public void handle(KeyEvent event) {
+				if(event.getCode() == KeyCode.ENTER) {
+					String login = loginInput.getText();
+					String password = passwordInput.getText();
+					if(!login.isEmpty() && !password.isEmpty())
+						Controller.actionProcessor(ActionId.LOGIN_SUBMIT, login, password);
+				}
+			}
+		};
+
 		// create the login label
 		Label loginLabel = new Label("Login :");
 		loginLabel.setMaxWidth(Double.MAX_VALUE);
 		loginLabel.setAlignment(Pos.CENTER);
-		
+
 		// create the login input
-		TextField loginInput = new TextField();
-		//loginInput.setAlignment(Pos.CENTER);
-		loginInput.setPrefWidth(200);
-		loginInput.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent event) {
-                if(event.getCode() == KeyCode.ENTER) {
-					dialog.close();
-                }
-            }
-        });
-		
+		this.loginInput = new TextField();
+		this.loginInput.setPrefWidth(200);
+		this.loginInput.setOnKeyPressed(submitByKey);
+
 		// create the password label
 		Label passwordLabel = new Label("Password :");
 		passwordLabel.setMaxWidth(Double.MAX_VALUE);
 		passwordLabel.setAlignment(Pos.CENTER);
-		
+
 		// create the password input
-		PasswordField passwordInput = new PasswordField();
-		//passwordInput.setAlignment(Pos.CENTER);
-		passwordInput.setPrefWidth(200);
-		passwordInput.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent event) {
-                if(event.getCode() == KeyCode.ENTER) {
-                	dialog.close();
-                }
-            }
-        });
-		
+		this.passwordInput = new PasswordField();
+		this.passwordInput.setPrefWidth(200);
+		this.passwordInput.setOnKeyPressed(submitByKey);
+
 		// create the submit button
 		Button submitButton = new Button("Sign in");
 		submitButton.setPrefWidth(100);
 		submitButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				dialog.close();
+				String login = loginInput.getText();
+				String password = loginInput.getText();
+				if(!login.isEmpty() && !password.isEmpty())
+					Controller.actionProcessor(ActionId.LOGIN_SUBMIT, login, password);
 			}
 		});
-		
+
 		// create the register button
 		Button registerButton = new Button("Register");
 		registerButton.setPrefWidth(50);
@@ -75,25 +86,26 @@ public class LoginDialog implements Window {
 		registerButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				dialog.close();
+				Controller.actionProcessor(ActionId.REGISTER_BUTTON);
 			}
 		});
-		
+
 		// create the vertical layout
 		VBox vBox = new VBox();
 		vBox.setPadding(new Insets(30));
 		vBox.setSpacing(10);
 		vBox.getChildren().add(loginLabel);
-		vBox.getChildren().add(loginInput);
+		vBox.getChildren().add(this.loginInput);
 		vBox.getChildren().add(passwordLabel);
-		vBox.getChildren().add(passwordInput);
+		vBox.getChildren().add(this.passwordInput);
 		vBox.getChildren().add(new BorderPane(submitButton));
 		vBox.getChildren().add(new BorderPane(registerButton));
-		
+
 		dialog.setScene(new Scene(vBox));
-		dialog.setTitle("Authentification");
+		dialog.setTitle("Authentication");
 		dialog.initModality(Modality.NONE);
 		dialog.initOwner(mainStage);
 		dialog.show();
+		return dialog;
 	}
 }

@@ -1,7 +1,6 @@
 package view;
 
-import controller.ActionId;
-import controller.Controller;
+import controller.ClientController;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -41,7 +40,7 @@ public class LoginDialog extends Window {
 					String login = loginInput.getText();
 					String password = passwordInput.getText();
 					if(!login.isEmpty() && !password.isEmpty())
-						Controller.actionProcessor(ActionId.LOGIN_SUBMIT, login, password);
+						ClientController.actionProcessor(ActionId.LOGIN_SUBMIT, login, password);
 				}
 			}
 		};
@@ -75,7 +74,7 @@ public class LoginDialog extends Window {
 				String login = loginInput.getText();
 				String password = loginInput.getText();
 				if(!login.isEmpty() && !password.isEmpty())
-					Controller.actionProcessor(ActionId.LOGIN_SUBMIT, login, password);
+					ClientController.actionProcessor(ActionId.LOGIN_SUBMIT, login, password);
 			}
 		});
 
@@ -86,7 +85,7 @@ public class LoginDialog extends Window {
 		registerButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				Controller.actionProcessor(ActionId.REGISTER_BUTTON);
+				ClientController.actionProcessor(ActionId.REGISTER_BUTTON);
 			}
 		});
 

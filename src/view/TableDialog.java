@@ -1,7 +1,6 @@
 package view;
 
-import controller.ActionId;
-import controller.Controller;
+import controller.ClientController;
 import model.Account;
 import model.Booking;
 import model.Room;
@@ -51,10 +50,9 @@ public class TableDialog extends Window {
 		TabPane tabPane = new TabPane();
 		int accountType = this.currentUser.getValue().getAccountType();
 		tabPane.getTabs().add(createRoomsTab(accountType));
-		if(accountType == Account.ROOT || accountType == Account.ADMIN) {
-			tabPane.getTabs().add(createBookingsTab());
+		tabPane.getTabs().add(createBookingsTab(accountType));
+		if(accountType == Account.ROOT || accountType == Account.ADMIN)
 			tabPane.getTabs().add(createAccountsTab());
-		}
 
 		// delegate the focus to the tab pane
 		tabPane.requestFocus();
@@ -101,7 +99,7 @@ public class TableDialog extends Window {
 		addRoom.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				Controller.actionProcessor(ActionId.ADD_ROOM_BUTTON);
+				ClientController.actionProcessor(ActionId.ADD_ROOM_BUTTON);
 			}
 		});
 		Button bookRoom = new Button("Book a room");
@@ -111,7 +109,15 @@ public class TableDialog extends Window {
 			public void handle(ActionEvent event) {
 				Room room = roomsTable.getSelectionModel().getSelectedItem();
 				if(room != null)
-					Controller.actionProcessor(ActionId.BOOK_ROOM_BUTTON, room, currentUser.getValue());
+					ClientController.actionProcessor(ActionId.BOOK_ROOM_BUTTON, room, currentUser.getValue());
+			}
+		});
+		Button logout = new Button("Log out");
+		logout.setMinWidth(100);
+		logout.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				ClientController.actionProcessor(ActionId.LOGOUT_BUTTON);
 			}
 		});
 
@@ -127,10 +133,13 @@ public class TableDialog extends Window {
 		borderPane.setPadding(new Insets(0, 50, 0, 50));
 		if(accountType == Account.ROOT || accountType == Account.ADMIN) {
 			borderPane.setLeft(addRoom);
-			borderPane.setRight(bookRoom);
-		}
-		else
 			borderPane.setCenter(bookRoom);
+			borderPane.setRight(logout);
+		}
+		else {
+			borderPane.setLeft(bookRoom);
+			borderPane.setRight(logout);
+		}
 		vBox.getChildren().add(borderPane);
 
 		Tab tab = new Tab();
@@ -141,7 +150,7 @@ public class TableDialog extends Window {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Tab createBookingsTab() {
+	private Tab createBookingsTab(int accountType) {
 		// create table
 		TableView<Booking> bookingsTable = new TableView<Booking>();
 		bookingsTable.setEditable(false);
@@ -177,7 +186,15 @@ public class TableDialog extends Window {
 			public void handle(ActionEvent event) {
 				Booking booking = bookingsTable.getSelectionModel().getSelectedItem();
 				if(booking != null)
-					Controller.actionProcessor(ActionId.CONFIRM_BOOKING_BUTTON, booking);
+					ClientController.actionProcessor(ActionId.CONFIRM_BOOKING_BUTTON, booking);
+			}
+		});
+		Button logout = new Button("Log out");
+		logout.setMinWidth(100);
+		logout.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				ClientController.actionProcessor(ActionId.LOGOUT_BUTTON);
 			}
 		});
 
@@ -191,7 +208,10 @@ public class TableDialog extends Window {
 		// create border layout
 		BorderPane borderPane = new BorderPane();
 		borderPane.setPadding(new Insets(0, 50, 0, 50));
-		borderPane.setCenter(confirmBooking);
+		if(accountType == Account.ROOT || accountType == Account.ADMIN)
+			borderPane.setCenter(confirmBooking);
+		else
+			borderPane.setCenter(logout);
 		vBox.getChildren().add(borderPane);
 
 		Tab tab = new Tab();
@@ -230,7 +250,15 @@ public class TableDialog extends Window {
 		createAdmin.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				Controller.actionProcessor(ActionId.CREATE_ADMIN_BUTTON);
+				ClientController.actionProcessor(ActionId.CREATE_ADMIN_BUTTON);
+			}
+		});
+		Button logout = new Button("Log out");
+		logout.setMinWidth(100);
+		logout.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				ClientController.actionProcessor(ActionId.LOGOUT_BUTTON);
 			}
 		});
 		
@@ -244,7 +272,8 @@ public class TableDialog extends Window {
 		// create border layout
 		BorderPane borderPane = new BorderPane();
 		borderPane.setPadding(new Insets(0, 50, 0, 50));
-		borderPane.setCenter(createAdmin);
+		borderPane.setLeft(createAdmin);
+		borderPane.setRight(logout);
 		vBox.getChildren().add(borderPane);
 		
 		Tab tab = new Tab();

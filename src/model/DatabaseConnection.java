@@ -13,12 +13,12 @@ import com.mysql.jdbc.Statement;
 public class DatabaseConnection {
 	private Connection connection;
 	
-	protected void connect(String url, String login, String password) throws ClassNotFoundException, SQLException {
+	public void connect(String url, String login, String password) throws ClassNotFoundException, SQLException {
 		Class.forName("com.mysql.jdbc.Driver");
 		this.connection = DriverManager.getConnection(url, login, password);
 	}
 	
-	protected void deconnect() throws SQLException {
+	public void deconnect() throws SQLException {
 		this.connection.close();
 	}
 	
@@ -31,7 +31,7 @@ public class DatabaseConnection {
 	
 	/* ACCOUNTS */
 	
-	protected Account createAccount(Account account, String password) throws SQLException {
+	public Account createAccount(Account account, String password) throws SQLException {
 		String query = "INSERT INTO account (name, login, password, type) VALUES (?, ?, ?, ?)";
 		PreparedStatement st = this.connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 		st.setString(1, account.getName());
@@ -43,7 +43,7 @@ public class DatabaseConnection {
 		return account;
 	}
 	
-	protected String getAccountNameById(int id) throws SQLException {
+	public String getAccountNameById(int id) throws SQLException {
 		String query = "SELECT name FROM account WHERE id = ?";
 		PreparedStatement st = this.connection.prepareStatement(query);
 		st.setInt(1, id);
@@ -53,7 +53,7 @@ public class DatabaseConnection {
 		return name;
 	}
 	
-	protected Account logIn(String login, String password) throws SQLException {
+	public Account logIn(String login, String password) throws SQLException {
 		String query = "SELECT id, name, login, type FROM account WHERE login = ? AND password = ?";
 		PreparedStatement st = this.connection.prepareStatement(query);
 		st.setString(1, login);
@@ -66,7 +66,7 @@ public class DatabaseConnection {
 		return account;
 	}
 	
-	protected Account[] getAllAccounts() throws SQLException {
+	public Account[] getAllAccounts() throws SQLException {
 		String query = "SELECT id, name, login, type FROM account";
 		PreparedStatement st = this.connection.prepareStatement(query);
 		ResultSet set = st.executeQuery();
@@ -79,7 +79,7 @@ public class DatabaseConnection {
 	
 	/* ROOMS */
 	
-	protected Room createRoom(Room room) throws SQLException {
+	public Room createRoom(Room room) throws SQLException {
 		String query = "INSERT INTO room (number, type, size, available) VALUES (?, ?, ?, ?)";
 		PreparedStatement st = this.connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 		st.setInt(1, room.getNumber());
@@ -91,7 +91,7 @@ public class DatabaseConnection {
 		return room;
 	}
 	
-	protected Room[] getAllRooms() throws SQLException {
+	public Room[] getAllRooms() throws SQLException {
 		String query = "SELECT id, number, type, size, available FROM room";
 		PreparedStatement st = this.connection.prepareStatement(query);
 		ResultSet set = st.executeQuery();
@@ -104,7 +104,7 @@ public class DatabaseConnection {
 	
 	/* BOOKINGS */
 	
-	protected Booking createBooking(Booking booking) throws SQLException {
+	public Booking createBooking(Booking booking) throws SQLException {
 		String query = "INSERT INTO booking (roomId, accountId, dateFrom, dateTo, confirmed) VALUES (?, ?, ?, ?, ?)";
 		PreparedStatement st = this.connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 		st.setInt(1, booking.getRoomId());
@@ -117,7 +117,21 @@ public class DatabaseConnection {
 		return booking;
 	}
 	
-	protected Booking[] getAllBookings() throws SQLException {
+	public Booking[] getUserBookings(int accountId) throws SQLException {
+		String query = "SELECT booking.id, account.id, account.name, room.id, room.number, booking.dateFrom, booking.dateTo, booking.confirmed FROM booking "
+			+ "INNER JOIN account ON account.id = ? AND booking.accountId = account.id "
+			+ "INNER JOIN room ON booking.roomId = room.id";
+		PreparedStatement st = this.connection.prepareStatement(query);
+		st.setInt(1, accountId);
+		ResultSet set = st.executeQuery();
+		Booking[] bookings = new Booking[getResultSetSize(set)];
+		for(int i = 0; set.next(); ++i)
+			bookings[i] = new Booking(set.getInt("booking.id"), set.getInt("room.id"), set.getInt("number"), set.getInt("account.id"), set.getString("name"), set.getDate("dateFrom"), set.getDate("dateTo"), set.getBoolean("confirmed"));
+		set.close();
+		return bookings;
+	}
+	
+	public Booking[] getAllBookings() throws SQLException {
 		String query = "SELECT booking.id, account.id, account.name, room.id, room.number, booking.dateFrom, booking.dateTo, booking.confirmed FROM booking "
 			+ "INNER JOIN account ON booking.accountId = account.id "
 			+ "INNER JOIN room ON booking.roomId = room.id";
@@ -130,7 +144,7 @@ public class DatabaseConnection {
 		return bookings;
 	}
 	
-	protected boolean isBookingsBetweenDates(int roomId, Date dateFrom, Date dateTo) throws SQLException {
+	public boolean isBookingsBetweenDates(int roomId, Date dateFrom, Date dateTo) throws SQLException {
 		String query = "SELECT dateFrom, dateTo FROM booking "
 			+ "WHERE roomId = ? AND (dateFrom BETWEEN ? AND ?) OR (dateTo BETWEEN ? AND ?)";
 		PreparedStatement st = this.connection.prepareStatement(query);
@@ -145,7 +159,7 @@ public class DatabaseConnection {
 		return isResult;
 	}
 	
-	protected boolean updateBooking(Booking booking) throws SQLException {
+	public boolean updateBooking(Booking booking) throws SQLException {
 		String query = "UPDATE booking SET dateFrom = ?,  dateTo = ?, confirmed = ? WHERE id = ?";
 		PreparedStatement st = this.connection.prepareStatement(query);
 		st.setDate(1, booking.getDateFrom());

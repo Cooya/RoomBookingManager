@@ -1,8 +1,7 @@
 package view;
 
 import model.Account;
-import controller.ActionId;
-import controller.Controller;
+import controller.ClientController;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -16,6 +15,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -47,7 +47,7 @@ public class RegisterDialog extends Window {
 					String password = passwordInput.getText();
 					String confirmPassword = confirmPasswordInput.getText();
 					if(!name.isEmpty() && !login.isEmpty() && !password.isEmpty() && confirmPassword.equals(password))
-						Controller.actionProcessor(ActionId.REGISTER_SUBMIT, new Account(-1, name, login, adminCreation ? Account.ADMIN : Account.CLIENT), password);
+						ClientController.actionProcessor(ActionId.REGISTER_SUBMIT, new Account(-1, name, login, adminCreation ? Account.ADMIN : Account.CLIENT), password);
 				}
 			}
 		};
@@ -93,7 +93,7 @@ public class RegisterDialog extends Window {
 		this.confirmPasswordInput.setOnKeyPressed(submitByKey);
 
 		// create the submit button
-		Button submitButton = new Button("Register");
+		Button submitButton = new Button(adminCreation ? "Create admin" : "Register");
 		submitButton.setPrefWidth(100);
 		submitButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -101,9 +101,20 @@ public class RegisterDialog extends Window {
 				String name = nameInput.getText();
 				String login = loginInput.getText();
 				String password = passwordInput.getText();
-				String confirmPassword = passwordInput.getText();
+				String confirmPassword = confirmPasswordInput.getText();
 				if(!name.isEmpty() && !login.isEmpty() && !password.isEmpty() && confirmPassword.equals(password))
-					Controller.actionProcessor(ActionId.REGISTER_SUBMIT, new Account(-1, name, login, adminCreation ? Account.ADMIN : Account.CLIENT), password);
+					ClientController.actionProcessor(ActionId.REGISTER_SUBMIT, new Account(-1, name, login, adminCreation ? Account.ADMIN : Account.CLIENT), password);
+			}
+		});
+		
+		// create the login button
+		Button loginButton = new Button("Login");
+		loginButton.setPrefWidth(50);
+		loginButton.setFont(Font.font(10));
+		loginButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				ClientController.actionProcessor(ActionId.LOGIN_BUTTON);
 			}
 		});
 
@@ -120,6 +131,7 @@ public class RegisterDialog extends Window {
 		vBox.getChildren().add(confirmPasswordLabel);
 		vBox.getChildren().add(this.confirmPasswordInput);
 		vBox.getChildren().add(new BorderPane(submitButton));
+		if(!adminCreation) vBox.getChildren().add(new BorderPane(loginButton));
 
 		dialog.setScene(new Scene(vBox));
 		dialog.setTitle(adminCreation ? "Admin creation" : "Registration");

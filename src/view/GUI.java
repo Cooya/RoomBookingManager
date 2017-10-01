@@ -3,8 +3,7 @@ package view;
 import model.Account;
 import model.Booking;
 import model.Room;
-import controller.ActionId;
-import controller.Controller;
+import controller.ClientController;
 import javafx.application.Application;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -45,7 +44,7 @@ public class GUI extends Application {
 	@Override
 	public void start(Stage stage) throws Exception {
 		this.mainStage = stage;
-		Controller.actionProcessor(ActionId.GUI_READY);
+		ClientController.actionProcessor(ActionId.GUI_READY);
 	}
 	
 	public void runThread() {

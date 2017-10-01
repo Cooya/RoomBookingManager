@@ -1,5 +1,10 @@
 package model;
-public class Account {
+
+import java.io.Serializable;
+
+public class Account implements Serializable {
+	private static final long serialVersionUID = 1L;
+	
 	public static final int ROOT = 0;
 	public static final int ADMIN = 1;
 	public static final int CLIENT = 2;

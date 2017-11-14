@@ -1,4 +1,4 @@
-# Room Booking Manager (freelance project)
+# Room Booking Manager (freelance job)
 
 ## To build 
 * Bind .jar library to the project (folder "lib")

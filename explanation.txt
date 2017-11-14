@@ -1,0 +1,32 @@
+Room Booking Manager
+
+MVC design pattern (Model - View - Controller)
+
+Controller : brain of the program, process user actions and perform these actions to the database.
+ - Main.java : run the server thread and the client GUI thread.
+ - ServerController.java : socket server on a seperate thread, listening on a fixed port, waiting for client requests, connected to database (with JDBC driver). When it receives a request (as a NetworkMessage), the message is processed and the database function associated to the message id is executed. The request response is also sent back to the client.
+ - ClientController.java : contains a socket client, receives actions from the view (throughout the function actionProcessor()) and executes each method associated to the user action which will build a NetworkMessage and send it to the server with the socket client. According to the response, the controller will execute the behaviour related (for example, close a window if it is ok or display an error message if error).
+ 
+ Model : manages all data of the program, as objects bound to database tables (MySQL).
+  - Account.java : represents the Account table into the database (just atributes, getters and setters), that means credentials and type of a user.
+  - Room.java : represents the Room table into the database (just atributes, getters and setters), that means info about a room (number, size, available or not, ...).
+  - Booking.java : represents the Booking table into the database (just atributes, getters and setters), that means a room booking (room id, dates, user who has booked, ...).
+  - DatabaseConnection.java : contains the JDBC connection to the database and all possible queries to the database. The server controller will call the proper query according to the request received.
+  - DataManager.java : contains all entities list (accounts, rooms, bookings) for the user interface. Each list (or collection) is observable, it means each time the collection or an entity is modified, the user interface is refreshed with the last values.
+  
+ View : represents the graphical user interface, using the JavaFX library.
+  - ActionId.java : enumeration that contains ids for each possible user action and then identify the function to call in the client controller.
+  - GUI.java : the JavaFX application, it will display and dismiss every window.
+  - Window.java : abstract class, inherited by all windows of the program, it just provides display() and dismiss() functions called by the client controller. All inheriting class must implement the innerDisplay() function to be displayed.
+  - InfoDialog.java : simple dialog box that displays a message (error or success info).
+  - LoginDialog.java : first dialog box that contains a form allowing to log in.
+  - RegisterDialog.java : dialog box allowing to create a new account, accessible from the login dialog.
+  - BookingDialog.java : dialog box that allows to book a room by filling out some info about the booking.
+  - RoomDialog.java : dialog box accessible only for admins providing the possibility to add new rooms.
+  - TableDialog.java : main dialog window, displaying all collections (if authorized by user rights). It displays 3 tabs (rooms, booking and users), listing the 3 data collections and buttons to modify these collections.
+  
+Network :
+ - SocketClient.java : represents a socket client connected to a socket server for send and receive data from this server. Everytime you connect a client to the server, a new client is created server-side for communicate between two clients.
+ - NetworkMesage.java : represents a serializable network message that is exchanged by two socket clients. It contains an id and a content. The id identifies the database query to execute and the content, an objects array, contains the arguments for the query. This message is serialized for sending and deserialized for reading.
+ - ClientNetworkInterface.java : is used by the client controller for communicate with the server. This class owns an socket client and only one function sendRequest() which sends a NetworkMessage and receives one. Thanks to a infinite loop and a buffer system, the network message may be divided, the NetworkMessage received will still be deserialized correctly.
+  

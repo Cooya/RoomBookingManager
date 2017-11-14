@@ -51,7 +51,7 @@ public class TableDialog extends Window {
 		int accountType = this.currentUser.getValue().getAccountType();
 		tabPane.getTabs().add(createRoomsTab(accountType));
 		tabPane.getTabs().add(createBookingsTab(accountType));
-		if(accountType == Account.ROOT || accountType == Account.ADMIN)
+		if(accountType == Account.ROOT)
 			tabPane.getTabs().add(createAccountsTab());
 
 		// delegate the focus to the tab pane
@@ -94,7 +94,7 @@ public class TableDialog extends Window {
 		roomsTable.getColumns().addAll(number, type, size, isAvailable);
 
 		// create buttons
-		Button addRoom = new Button("Add a room");
+		Button addRoom = new Button("Add room");
 		addRoom.setMinWidth(100);
 		addRoom.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -102,7 +102,7 @@ public class TableDialog extends Window {
 				ClientController.actionProcessor(ActionId.ADD_ROOM_BUTTON);
 			}
 		});
-		Button bookRoom = new Button("Book a room");
+		Button bookRoom = new Button("Book room");
 		bookRoom.setMinWidth(100);
 		bookRoom.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -179,7 +179,7 @@ public class TableDialog extends Window {
 		bookingsTable.getColumns().addAll(roomNumber, accountName, dateFrom, dateTo, isConfirmed);
 		
 		// create buttons
-		Button confirmBooking = new Button("Confirm a booking");
+		Button confirmBooking = new Button("Confirm booking");
 		confirmBooking.setMinWidth(100);
 		confirmBooking.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -245,7 +245,7 @@ public class TableDialog extends Window {
 		accountsTable.getColumns().addAll(name, login, accountType);
 		
 		// create buttons
-		Button createAdmin = new Button("Create a new admin");
+		Button createAdmin = new Button("Create new admin");
 		createAdmin.setMinWidth(150);
 		createAdmin.setOnAction(new EventHandler<ActionEvent>() {
 			@Override

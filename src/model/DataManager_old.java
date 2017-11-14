@@ -7,7 +7,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public class DataManager {
+public class DataManager_old {
 	private static final String DB_URL = "jdbc:mysql://localhost/room_booking_manager";
 	private static final String DB_LOGIN = "root";
 	
@@ -17,7 +17,7 @@ public class DataManager {
 	private ObservableList<Booking> bookings;
 	private SimpleObjectProperty<Account> currentUser;
 	
-	public DataManager() {
+	public DataManager_old() {
 		this.db = new DatabaseConnection();
 		this.accounts = FXCollections.observableArrayList();
 		this.rooms = FXCollections.observableArrayList();
